@@ -39,3 +39,18 @@ jobs:
       # Gradle을 사용하여 프로젝트의 테스트를 실행
       - name: Run tests
         run: ./gradlew test
+      # CI/CD 결과를 Slcak으로 전송
+      - name: Notify Slack
+        if: failure() || success()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS="unknown"
+          if [ ${{ job.status }} == 'success' ]; then
+            STATUS="passed"
+          else
+            STATUS="failed"
+          fi
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"text\": \"CI build $STATUS for ${{ github.repository }}\"
+          }" $SLACK_WEBHOOK_URL
