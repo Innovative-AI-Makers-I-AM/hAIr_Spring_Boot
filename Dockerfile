@@ -1,4 +1,4 @@
-FROM adoptopenjdk:17-jre-hotspot
+FROM eclipse-temurin:17-jre-alpine
 RUN apk update
 ARG JAR_FILE=*.jar
 COPY ${JAR_FILE} app.jar
