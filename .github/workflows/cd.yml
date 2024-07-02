@@ -11,6 +11,12 @@ env:
   NAME: backend-server
 
 jobs:
+  get-ip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Public IP
+        run: curl http://checkip.amazonaws.com
+        
   build:
     name: Build
     runs-on: ubuntu-latest
