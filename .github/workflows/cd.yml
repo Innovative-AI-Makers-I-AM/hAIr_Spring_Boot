@@ -34,6 +34,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      ## 그래들 빌드를 위한 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew 
+
       ## gradle build
       - name: Build with Gradle
         run: ./gradlew build -x test
