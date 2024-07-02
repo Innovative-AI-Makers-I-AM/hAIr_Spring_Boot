@@ -20,8 +20,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
           java-version: '17'
+          distribution: 'Adopt'  # AdoptOpenJDK를 사용합니다
 
       ## gradle caching
       - name: Gradle Caching
@@ -34,9 +34,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      ## 그래들 빌드를 위한 권한 부여
+      ## grant execute permission for gradlew
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew 
+        run: chmod +x ./gradlew
 
       ## gradle build
       - name: Build with Gradle
@@ -45,9 +45,10 @@ jobs:
       ## docker build & push to production
       - name: Docker build & push to prod
         run: |
-          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
+          LOWERCASE_ACTOR=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
+          docker login ghcr.io -u $LOWERCASE_ACTOR -p ${{ secrets.GHCR_TOKEN }}
           docker buildx create --name arm64builder --use
-          docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/${{ github.actor }}/backend-server:latest --push .
+          docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/$LOWERCASE_ACTOR/backend-server:latest --push .
           docker logout
 
   deploy:
