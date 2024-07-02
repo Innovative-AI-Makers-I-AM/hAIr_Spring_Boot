@@ -110,8 +110,9 @@ jobs:
               sudo docker rm -f $(sudo docker ps -qa --filter ancestor=backend-deploy-test/backend-deploy-test-server:latest)
             fi
             echo "pass backend-deploy-test/backend-deploy-test-server:latest"
-            echo ${{ secrets.GHCR_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            sudo docker pull ghcr.io/${{ github.actor }}/backend-server:latest
+            LOWERCASE_ACTOR=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
+            echo ${{ secrets.GHCR_TOKEN }} | sudo docker login ghcr.io -u $LOWERCASE_ACTOR --password-stdin
+            sudo docker pull ghcr.io/$LOWERCASE_ACTOR/backend-server:latest
             sudo docker image prune -f
             sudo docker logout
 
