@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'adopt'  # AdoptOpenJDK를 사용합니다
+          distribution: 'adopt'
 
       ## gradle caching
       - name: Gradle Caching
@@ -46,10 +46,10 @@ jobs:
       - name: Docker build & push to prod
         run: |
           LOWERCASE_ACTOR=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
-          docker login ghcr.io -u $LOWERCASE_ACTOR -p ${{ secrets.GHCR_TOKEN }}
-          docker buildx create --name arm64builder --use
-          docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/$LOWERCASE_ACTOR/backend-server:latest --push .
-          docker logout
+          echo ${{ secrets.GHCR_TOKEN }} | sudo docker login ghcr.io -u $LOWERCASE_ACTOR --password-stdin
+          sudo docker buildx create --name arm64builder --use
+          sudo docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/$LOWERCASE_ACTOR/backend-server:latest --push .
+          sudo docker logout
 
   deploy:
     needs: build
@@ -75,15 +75,15 @@ jobs:
             ls -al
             cd actions-runner
             pwd
-            if [[ "$(docker ps -q --filter ancestor=mysql:8.0)" ]]; then
-              docker rm -f $(docker ps -qa --filter ancestor=mysql:8.0)
+            if [[ "$(sudo docker ps -q --filter ancestor=mysql:8.0)" ]]; then
+              sudo docker rm -f $(sudo docker ps -qa --filter ancestor=mysql:8.0)
             fi
             echo "pass mysql-container"
-            if [[ "$(docker ps -qa --filter ancestor=backend-deploy-test/backend-deploy-test-server:latest)" ]]; then
-              docker rm -f $(docker ps -qa --filter ancestor=backend-deploy-test/backend-deploy-test-server:latest)
+            if [[ "$(sudo docker ps -qa --filter ancestor=backend-deploy-test/backend-deploy-test-server:latest)" ]]; then
+              sudo docker rm -f $(sudo docker ps -qa --filter ancestor=backend-deploy-test/backend-deploy-test-server:latest)
             fi
             echo "pass backend-deploy-test/backend-deploy-test-server:latest"
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
-            docker pull ghcr.io/${{ github.actor }}/backend-server:latest
-            docker image prune -f
-            docker logout
+            echo ${{ secrets.GHCR_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            sudo docker pull ghcr.io/${{ github.actor }}/backend-server:latest
+            sudo docker image prune -f
+            sudo docker logout
