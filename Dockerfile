@@ -1,4 +1,4 @@
-FROM openjdk:17-alpine
+FROM adoptopenjdk:17-jre-hotspot
 RUN apk update
 ARG JAR_FILE=*.jar
 COPY ${JAR_FILE} app.jar
