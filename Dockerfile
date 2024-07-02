@@ -1,5 +1,4 @@
 FROM eclipse-temurin:17-jre
-RUN apk update
 ARG JAR_FILE=*.jar
 COPY ${JAR_FILE} app.jar
 COPY src/main/resources/springboot.p12 springboot.p12
