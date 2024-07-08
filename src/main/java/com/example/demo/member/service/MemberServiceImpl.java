@@ -10,6 +10,7 @@ import com.example.demo.member.service.request.EmailMatchRequest;
 import com.example.demo.member.service.request.EmailPasswordRequest;
 import com.example.demo.member.service.request.MemberLoginRequest;
 import com.example.demo.member.service.request.MemberRegisterRequest;
+import com.example.demo.utility.security.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class MemberServiceImpl implements MemberService {
     final private MemberRepository memberRepository;
     final private AuthenticationRepository authenticationRepository;
     final private MemberProfileRepository memberProfileRepository;
-//    final private RedisService redisService;
+    final private RedisService redisService;
 
     @Override
     public Boolean emailValidation(String email) {
@@ -72,19 +73,19 @@ public class MemberServiceImpl implements MemberService {
         if (maybeMember.isPresent()) {
             Member member = maybeMember.get();
 
-            System.out.println("사용자가 입력한 비번: " + memberLoginRequest.getPassword());
-            System.out.println("비밀번호 일치 검사: " + member.isRightPassword(memberLoginRequest.getPassword()));
+            System.out.println("Password entered by the user: " + memberLoginRequest.getPassword());
+            System.out.println("Password Match Check: " + member.isRightPassword(memberLoginRequest.getPassword()));
 
             if (!member.isRightPassword(memberLoginRequest.getPassword())) {
-                System.out.println("잘 들어오나 ?");
-                throw new RuntimeException("이메일 및 비밀번호 입력이 잘못되었습니다!");
+                System.out.println("Is it Okay?");
+                throw new RuntimeException("Email or passowrd is incorrec!");
             }
 
             UUID userToken = UUID.randomUUID();
 
             // redis 처리 필요
-//            redisService.deleteByKey(userToken.toString());
-//            redisService.setKeyAndValue(userToken.toString(), member.getMemberId());
+            redisService.deleteByKey(userToken.toString());
+            redisService.setKeyAndValue(userToken.toString(), member.getMemberId());
 
             /* (지영) 로그인하면 사용자의 token, memberId, nickname + 여기에 memberType 까지 알려주도록 수정 */
             MemberLoginResponse memberLoginResponse;
@@ -119,14 +120,19 @@ public class MemberServiceImpl implements MemberService {
         return true;
     }
 
-//    public void resign(String token) {
-//        Long memid = redisService.getValueByKey(token);
-//        Optional<Member> maybeMember = memberRepository.findById(memid);
-//        if (maybeMember.isPresent()) {
-//            Member member = maybeMember.get();
-//            memberRepository.delete(member);
-//        } else {
-//            System.out.println("없는디?");
-//        }
-//    }
+    public void resign(String token) {
+        System.out.println("Token : " + token);
+        token = token.substring(1, token.length()-1);
+        System.out.println("Token : " + token);
+        Long memid = redisService.getValueByKey(token);
+        System.out.println("memid : " + memid);
+        Optional<Member> maybeMember = memberRepository.findById(memid);
+        if (maybeMember.isPresent()) {
+            Member member = maybeMember.get();
+            memberRepository.delete(member);
+            System.out.println("Resigned!");
+        } else {
+            System.out.println("없는디?");
+        }
+    }
 }

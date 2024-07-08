@@ -28,7 +28,7 @@ public class Member {
     // 일대일 관계를 나타냅니다. 지연 로딩을 사용하고, 부모 엔티티에 대한 변경이 자식 엔티티에 전파됩니다.
     private MemberProfile memberProfile;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     // 일대다 관계를 나타냅니다. 지연 로딩을 사용하고, 부모 엔티티에 대한 변경이 자식 엔티티에 전파됩니다.
     private Set<Authentication> authentications = new HashSet<>();
 
