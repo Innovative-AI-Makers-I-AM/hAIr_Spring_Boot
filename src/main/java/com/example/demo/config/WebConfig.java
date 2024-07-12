@@ -14,10 +14,16 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") // React 로컬 개발 서버 주소
-                        .allowedOrigins("https://hair-react-js-git-main-annsunghees-projects.vercel.app/") // React Vercel 개발 서버 주소
-                        .allowedOrigins("https://hair-react-js.vercel.app/") // React Vercel 개발 서버 주소
+                        .allowedOrigins("http://localhost:3000",
+                                                    "https://hair-react-js-git-main-annsunghees-projects.vercel.app/",
+                                                    "https://hair-react-js.vercel.app/"
+                        ) // React 로컬 개발 서버 주소
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
+                // registry.addMapping("/**")
+                //         .allowedOrigins("http://localhost:3000") // React 로컬 개발 서버 주소
+                //         .allowedOrigins("https://hair-react-js-git-main-annsunghees-projects.vercel.app/") // React Vercel 개발 서버 주소
+                //         .allowedOrigins("https://hair-react-js.vercel.app/") // React Vercel 개발 서버 주소
+                //         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };
     }

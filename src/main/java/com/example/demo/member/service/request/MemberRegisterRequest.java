@@ -15,11 +15,13 @@ public class MemberRegisterRequest {
     final private String street;
     final private String addressDetail;
     final private String zipcode;
+    final private String gender;
 
     public Member toMember () {
         return new Member(
                 email,
                 nickName,
+                gender,
                 MemberProfile.of(city, street, addressDetail, zipcode)
         );
     }

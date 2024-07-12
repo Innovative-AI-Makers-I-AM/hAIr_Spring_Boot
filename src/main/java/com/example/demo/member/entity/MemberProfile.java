@@ -1,5 +1,7 @@
 package com.example.demo.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +22,7 @@ public class MemberProfile {
     @Embedded // Address 클래스가 이 엔티티에 내장됨을 나타냅니다.
     private Address address;
 
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY) // 일대일 관계를 나타내며 지연 로딩을 사용합니다.
     @JoinColumn(name = "member_id") // 외래 키 컬럼을 지정합니다.
     private Member member;

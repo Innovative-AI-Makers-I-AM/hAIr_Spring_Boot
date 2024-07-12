@@ -1,5 +1,6 @@
 package com.example.demo.member.service;
 
+import com.example.demo.member.entity.Member;
 import com.example.demo.member.service.request.EmailMatchRequest;
 import com.example.demo.member.service.request.EmailPasswordRequest;
 import com.example.demo.member.service.request.MemberLoginRequest;
@@ -13,4 +14,5 @@ public interface MemberService {
     Boolean emailMatch(EmailMatchRequest toEmailMatchRequest);
     void resign(String token);
     Boolean memberNicknameValidation(String nickName);
+    Member getUserById(Long userId);
 }

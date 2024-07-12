@@ -135,4 +135,20 @@ public class MemberServiceImpl implements MemberService {
             System.out.println("없는디?");
         }
     }
+
+    @Override
+    public Member getUserById(Long userId) {
+
+        Member member = null;
+
+        Optional<Member> _member = memberRepository.findById(userId);
+        
+        if (_member.isPresent()) {
+            member = _member.get();
+        } else {
+            System.out.println("없는디?");
+        }
+
+        return member;
+    }
 }
