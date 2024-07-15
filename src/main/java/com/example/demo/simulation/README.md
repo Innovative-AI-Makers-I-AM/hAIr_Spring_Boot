@@ -1,6 +1,6 @@
-# Member 도메인
+# Simulation 도메인
 
-# controller
+<!-- # controller
 - 이 디렉토리는 클라이언트의 요청을 처리하고 응답을 반환하는 역할을 합니다.
 - `MemberController`: 회원과 관련된 요청을 처리하는 컨트롤러 클래스.
 
@@ -40,5 +40,5 @@
 - `EmailPasswordRequest`: 이메일 및 비밀번호 요청을 위한 데이터 클래스.
 - `MemberLoginRequest`: 회원 로그인 요청을 위한 데이터 클래스.
 - `MemberRegisterRequest`: 회원 가입 요청을 위한 데이터 클래스.
-- `MemberUpdateRequest`: 회원 정보 수정을 위한 데이터 클래스.
+- `MemberUpdateRequest`: 회원 정보 수정을 위한 데이터 클래스. -->
 
