@@ -1,18 +1,25 @@
 package com.example.demo.member.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.member.controller.form.EmailMatchForm;
 import com.example.demo.member.controller.form.EmailPasswordForm;
 import com.example.demo.member.controller.form.MemberLoginForm;
 import com.example.demo.member.controller.form.MemberRegisterForm;
+import com.example.demo.member.controller.form.MemberUpdateForm;
 import com.example.demo.member.entity.Member;
 import com.example.demo.member.service.MemberLoginResponse;
 import com.example.demo.member.service.MemberService;
@@ -98,8 +105,18 @@ public class MemberController {
     @GetMapping("/{userId}")
     public Member getUserById(@PathVariable("userId") Long userId) {
         log.info("getUserById(): " + userId);
-        Member a = memberService.getUserById(userId);
-        System.out.println(a);
-        return a;
+        return memberService.getUserById(userId);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<String> updateMember(@PathVariable("userId") Long userId, @ModelAttribute MemberUpdateForm form) {
+        log.info("updateMember(): userId=" + userId + ", form=" + form);
+
+        boolean isUpdated = memberService.updateMember(userId, form.toMemberUpdateRequest());
+        if (isUpdated) {
+            return ResponseEntity.ok("Member updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Member update failed");
+        }
     }
 }

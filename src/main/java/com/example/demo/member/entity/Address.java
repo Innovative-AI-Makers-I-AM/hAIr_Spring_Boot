@@ -3,6 +3,7 @@ package com.example.demo.member.entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 
 @Getter
@@ -12,15 +13,19 @@ import jakarta.persistence.*;
 public class Address {
 
     @Column(nullable = false) // 해당 필드가 null 값을 허용하지 않음을 나타냅니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     private String city;
 
     @Column(nullable = false) // 해당 필드가 null 값을 허용하지 않음을 나타냅니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     private String street;
 
     @Column(nullable = false) // 해당 필드가 null 값을 허용하지 않음을 나타냅니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     private String addressDetail;
 
     @Column(nullable = false) // 해당 필드가 null 값을 허용하지 않음을 나타냅니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     private String zipcode;
 
     // 정적 팩토리 메서드: 주소 정보를 받아 Address 인스턴스를 생성

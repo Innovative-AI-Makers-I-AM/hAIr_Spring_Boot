@@ -1,5 +1,11 @@
 package com.example.demo.member.service;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.member.entity.Authentication;
 import com.example.demo.member.entity.BasicAuthentication;
 import com.example.demo.member.entity.Member;
@@ -10,12 +16,10 @@ import com.example.demo.member.service.request.EmailMatchRequest;
 import com.example.demo.member.service.request.EmailPasswordRequest;
 import com.example.demo.member.service.request.MemberLoginRequest;
 import com.example.demo.member.service.request.MemberRegisterRequest;
+import com.example.demo.member.service.request.MemberUpdateRequest;
 import com.example.demo.utility.security.RedisService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -151,4 +155,20 @@ public class MemberServiceImpl implements MemberService {
 
         return member;
     }
+
+    @Override
+    @Transactional
+    public boolean updateMember(Long userId, MemberUpdateRequest request) {
+        Optional<Member> maybeMember = memberRepository.findById(userId);
+        if (!maybeMember.isPresent()) {
+            return false;
+        }
+
+        Member member = maybeMember.get();
+        member = request.toMember(member);
+
+        memberRepository.save(member);
+        return true;
+    }
+    
 }

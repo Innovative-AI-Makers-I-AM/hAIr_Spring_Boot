@@ -3,6 +3,8 @@ package com.example.demo.member.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -16,21 +18,26 @@ public class Member {
 
     @Id // 이 필드가 엔티티의 기본 키임을 나타냅니다.
     @Getter // getter 메서드를 자동으로 생성합니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본 키를 데이터베이스가 자동으로 생성해줌을 나타냅니다.
     private Long memberId;
 
     @Getter // getter 메서드를 자동으로 생성합니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     @Column(nullable = false) // 해당 필드가 null 값을 허용하지 않음을 나타냅니다.
     private String email;
 
     @Getter // getter 메서드를 자동으로 생성합니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     @Column(nullable = false) // 해당 필드가 null 값을 허용하지 않음을 나타냅니다.
     private String nickName;
 
-    @Getter
+    @Getter // getter 메서드를 자동으로 생성합니다.
+    @Setter // setter 메서드를 자동으로 생성합니다.
     @Column(nullable = false)
     private String gender;
 
+    @Setter // setter 메서드를 자동으로 생성합니다.
     @JsonManagedReference
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     // 일대일 관계를 나타냅니다. 지연 로딩을 사용하고, 부모 엔티티에 대한 변경이 자식 엔티티에 전파됩니다.

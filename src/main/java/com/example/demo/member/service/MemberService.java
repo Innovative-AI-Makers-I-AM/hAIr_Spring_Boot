@@ -5,6 +5,7 @@ import com.example.demo.member.service.request.EmailMatchRequest;
 import com.example.demo.member.service.request.EmailPasswordRequest;
 import com.example.demo.member.service.request.MemberLoginRequest;
 import com.example.demo.member.service.request.MemberRegisterRequest;
+import com.example.demo.member.service.request.MemberUpdateRequest;
 
 public interface MemberService {
     Boolean emailValidation(String email);
@@ -15,4 +16,5 @@ public interface MemberService {
     void resign(String token);
     Boolean memberNicknameValidation(String nickName);
     Member getUserById(Long userId);
+    boolean updateMember(Long userId, MemberUpdateRequest memberUpdateRequest);
 }
