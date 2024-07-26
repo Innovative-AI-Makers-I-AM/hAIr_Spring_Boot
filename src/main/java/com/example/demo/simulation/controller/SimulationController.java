@@ -43,11 +43,18 @@ public class SimulationController {
             body.add("face", new MultipartInputStreamFileResource(faceImage.getInputStream(), faceImage.getOriginalFilename()));
             body.add("shape", new MultipartInputStreamFileResource(hairImage.getInputStream(), hairImage.getOriginalFilename()));
             body.add("color", new MultipartInputStreamFileResource(hairImage.getInputStream(), hairImage.getOriginalFilename()));
+            
+            System.out.println("=========================");
+            System.out.println(faceImage);
+            System.out.println(hairImage);
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             // 파이썬 서버에 사진들 전송 후 response 받기
             ResponseEntity<byte[]> response = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, byte[].class);
+
+            System.out.println("=========================");
+            System.out.println(response);
 
             // 클라이언트에 response 전달
             HttpHeaders responseHeaders = new HttpHeaders();
