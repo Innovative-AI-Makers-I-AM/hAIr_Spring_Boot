@@ -2,6 +2,8 @@ package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -26,5 +28,19 @@ public class WebConfig {
                 //         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };
+    }
+
+
+
+
+
+
+    /////////////////////
+    @Bean
+    public RestTemplate restTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(50000);  // 연결 타임아웃 (ms)
+        factory.setReadTimeout(50000);     // 읽기 타임아웃 (ms)
+        return new RestTemplate(factory);
     }
 }

@@ -3,6 +3,7 @@ package com.example.demo.simulation.controller;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
@@ -25,14 +26,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/simulation")
 public class SimulationController {
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @PostMapping
     public ResponseEntity<byte[]> simulateHairstyle(
             @RequestParam("face") MultipartFile faceImage,
             @RequestParam("hair") MultipartFile hairImage) {
                 
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://192.168.0.249:8000" + "/hair_transfer");
+            // RestTemplate restTemplate = new RestTemplate();
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8000" + "/hair_transfer");
 
             // http 헤더 설정
             HttpHeaders headers = new HttpHeaders();
