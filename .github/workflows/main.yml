@@ -11,17 +11,36 @@ on:
   pull_request:
     branches:
       - main
+
 # 할 일
 jobs:
   # 이름 설정 
   build-and-test:
     # 최신버전의 우분투 기반의 환경에서 동작 
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: iam
+          MYSQL_USER: iam
+          MYSQL_PASSWORD: iam@123
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     # 수행 순서 정의
     steps:
       # 저장소의 코드를 체크아웃
       - name: Check out the repository
         uses: actions/checkout@v2
+
       # JDK 설정
       - name: Set up JDK 17
         uses: actions/setup-java@v2
@@ -32,14 +51,20 @@ jobs:
       # Gradle 을 사용하기 위한 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
-          
+
+      # 데이터베이스 설정 파일 복사
+      - name: Copy application.properties
+        run: cp src/main/resources/application.properties src/main/resources/application-ci.properties
+
       # Gradle을 사용하여 프로젝트를 빌드
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --info
+          
       # Gradle을 사용하여 프로젝트의 테스트를 실행
       - name: Run tests
-        run: ./gradlew test
-      # CI/CD 결과를 Slcak으로 전송
+        run: ./gradlew test --info
+
+      # CI/CD 결과를 Slack으로 전송
       - name: Notify Slack
         if: failure() || success()
         env:
