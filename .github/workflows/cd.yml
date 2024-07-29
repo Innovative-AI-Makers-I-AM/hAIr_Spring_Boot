@@ -1,10 +1,12 @@
 name: Deploy
 
+# 워크플로우가 실행되는 조건을 정의
 on:
   push:
     branches:
       - main
 
+# 환경 변수를 설정
 env:
   DOCKER_IMAGE: ghcr.io/${{ github.actor }}/backend-server
   VERSION: ${{ github.sha }}
@@ -26,7 +28,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      # Gradle 캐싱
+      # Gradle 캐싱 설정
       - name: Gradle Caching
         uses: actions/cache@v3
         with:
@@ -41,17 +43,21 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # Gradle 빌드
+      # Gradle 빌드 수행
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-      # Docker 빌드 및 프로덕션에 푸시
+      # Docker 빌드 및 이미지를 GHCR로 푸시
       - name: Docker build & push to prod
         run: |
+          # GitHub 사용자 이름을 소문자로 변환
           LOWERCASE_ACTOR=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
+          # GHCR에 로그인
           echo ${{ secrets.GHCR_TOKEN }} | sudo docker login ghcr.io -u $LOWERCASE_ACTOR --password-stdin
+          # Docker 빌드 및 푸시
           sudo docker buildx create --name arm64builder --use
           sudo docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t ghcr.io/$LOWERCASE_ACTOR/backend-server:latest --push .
+          # GHCR 로그아웃
           sudo docker logout
 
   deploy:
@@ -98,22 +104,34 @@ jobs:
           key_path: ""  # 사용하지 않음
           script_stop: true
           script: |
+            # 현재 디렉토리와 파일 리스트 출력
             pwd
             ls -al
+            # actions-runner 디렉토리로 이동
             cd actions-runner
             pwd
+            # mysql 컨테이너가 실행 중인 경우 중지 및 제거
             if [[ "$(sudo docker ps -q --filter ancestor=mysql:8.0)" ]]; then
               sudo docker rm -f $(sudo docker ps -qa --filter ancestor=mysql:8.0)
             fi
             echo "pass mysql-container"
-            if [[ "$(sudo docker ps -qa --filter ancestor=backend-deploy-test/backend-deploy-test-server:latest)" ]]; then
-              sudo docker rm -f $(sudo docker ps -qa --filter ancestor=backend-deploy-test/backend-deploy-test-server:latest)
+            # backend-server 컨테이너가 실행 중인 경우 중지 및 제거
+            if [[ "$(sudo docker ps -qa --filter ancestor=ghcr.io/${{ github.actor }}/backend-server:latest)" ]]; then
+              sudo docker rm -f $(sudo docker ps -qa --filter ancestor=ghcr.io/${{ github.actor }}/backend-server:latest)
             fi
-            echo "pass backend-deploy-test/backend-deploy-test-server:latest"
+            echo "pass backend-server"
+            # GHCR에 로그인
             LOWERCASE_ACTOR=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
             echo ${{ secrets.GHCR_TOKEN }} | sudo docker login ghcr.io -u $LOWERCASE_ACTOR --password-stdin
+            # 최신 backend-server 이미지를 pull
             sudo docker pull ghcr.io/$LOWERCASE_ACTOR/backend-server:latest
+            # 사용하지 않는 Docker 이미지를 정리
             sudo docker image prune -f
+            # 기존 Docker Compose 서비스를 중지
+            sudo docker-compose down
+            # Docker Compose를 사용하여 서비스를 백그라운드에서 시작
+            sudo docker-compose up -d
+            # GHCR 로그아웃
             sudo docker logout
 
       # 보안 그룹에서 IP 제거
