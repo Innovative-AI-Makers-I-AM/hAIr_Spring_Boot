@@ -17,10 +17,11 @@ public class MemberRegisterForm {
     private String street;
     private String addressDetail;
     private String zipcode;
+    private String gender;
 
     private String nickName;
 
     public MemberRegisterRequest toMemberRegisterRequest () {
-        return new MemberRegisterRequest(email, password, nickName, "", "", "", "");
+        return new MemberRegisterRequest(email, password, nickName, city, "", "", "", gender);
     }
 }

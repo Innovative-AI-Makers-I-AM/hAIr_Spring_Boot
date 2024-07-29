@@ -9,6 +9,7 @@
 - `EmailPasswordForm`: 이메일 및 비밀번호 요청을 위한 폼 데이터 클래스.
 - `MemberLoginForm`: 회원 로그인 요청을 위한 폼 데이터 클래스.
 - `MemberRegisterForm`: 회원 가입 요청을 위한 폼 데이터 클래스.
+- `MemberUpdateForm`: 회원 정보 수정을 위한 폼 데이터 클래스.
 
 # entity
 - 이 디렉토리는 데이터베이스의 테이블과 매핑되는 엔티티 클래스들을 포함합니다.
@@ -39,4 +40,5 @@
 - `EmailPasswordRequest`: 이메일 및 비밀번호 요청을 위한 데이터 클래스.
 - `MemberLoginRequest`: 회원 로그인 요청을 위한 데이터 클래스.
 - `MemberRegisterRequest`: 회원 가입 요청을 위한 데이터 클래스.
+- `MemberUpdateRequest`: 회원 정보 수정을 위한 데이터 클래스.
 
