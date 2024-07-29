@@ -1,10 +1,13 @@
 package com.example.demo.simulation.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,35 +35,51 @@ public class SimulationController {
     @PostMapping
     public ResponseEntity<byte[]> simulateHairstyle(
             @RequestParam("face") MultipartFile faceImage,
-            @RequestParam("hair") MultipartFile hairImage) {
-                
+            @RequestParam("hair") MultipartFile hairImage,
+            @RequestParam("id") String userId) {
+
         try {
-            // RestTemplate restTemplate = new RestTemplate();
+            String _folderPath = "simulatedImg/" + userId; // 유저 id 기반 폴더 경로 설정
+                File _folder = new File(_folderPath);
+                if (!_folder.exists()) {
+                    _folder.mkdirs(); // 폴더가 존재하지 않으면 생성
+                }
+
+
+
+                
+
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8000" + "/hair_transfer");
 
-            // http 헤더 설정
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // http 바디 설정
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("face", new MultipartInputStreamFileResource(faceImage.getInputStream(), faceImage.getOriginalFilename()));
             body.add("shape", new MultipartInputStreamFileResource(hairImage.getInputStream(), hairImage.getOriginalFilename()));
             body.add("color", new MultipartInputStreamFileResource(hairImage.getInputStream(), hairImage.getOriginalFilename()));
-            
-            System.out.println("=========================");
-            System.out.println(faceImage);
-            System.out.println(hairImage);
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // 파이썬 서버에 사진들 전송 후 response 받기
             ResponseEntity<byte[]> response = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, byte[].class);
 
-            System.out.println("=========================");
-            System.out.println(response);
+            // 결과 이미지 저장
+            if (response.getStatusCode() == HttpStatus.OK) {
+                byte[] imageBytes = response.getBody();
+                String folderPath = "simulatedImg/" + userId; // 유저 id 기반 폴더 경로 설정
+                File folder = new File(folderPath);
+                if (!folder.exists()) {
+                    folder.mkdirs(); // 폴더가 존재하지 않으면 생성
+                }
 
-            // 클라이언트에 response 전달
+                // 콜론(:)을 대시(-)로 바꿔서 타임스탬프 형식 변경
+                String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
+                File imageFile = new File(folderPath + "/" + timestamp + ".png");
+                try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                    fos.write(imageBytes);
+                }
+            }
+
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Content-Type", "image/png");
             return new ResponseEntity<>(response.getBody(), responseHeaders, HttpStatus.OK);
@@ -71,22 +90,20 @@ public class SimulationController {
         }
     }
 
-    // simulateHairstyle 메소드에서 쓰이는 클래스
-    // MultipartFile을 InputStreamResource로 변환하는 데 사용
     public class MultipartInputStreamFileResource extends InputStreamResource {
 
         private final String filename;
-    
+
         public MultipartInputStreamFileResource(InputStream inputStream, String filename) {
             super(inputStream);
             this.filename = filename;
         }
-    
+
         @Override
         public String getFilename() {
             return this.filename;
         }
-    
+
         @Override
         public long contentLength() throws IOException {
             return -1; // We do not know the content length in advance
