@@ -1,15 +1,14 @@
-version: "3.7"
-
+version: '3.7'
 services:
   db:
-    image: "mysql:8.0"
+    image: 'mysql:8.0'
     container_name: hair-db
     volumes:
       - dbdata:/var/lib/mysql
       - ./docker/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
       - ./docker/mysql/logs:/var/log/mysql
     ports:
-      - "3306:3306"
+      - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_USER: ${DB_USER}
@@ -17,24 +16,22 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     networks:
       - app
-
   redis:
     image: redis:7.0.4
     command: redis-server --port 6379
     container_name: hair-redis
     hostname: redis_standalone
     labels:
-      - "name=redis"
-      - "mode=standalone"
+      - 'name=redis'
+      - 'mode=standalone'
     ports:
-      - "6379:6379"
+      - '6379:6379'
     depends_on:
       - db
     networks:
       - app
-
   server:
-    image: "ghcr.io/__GITHUB_ACTOR__/backend-server:latest"
+    image: 'ghcr.io/${LOWERCASE_ACTOR}/backend-server:latest'
     container_name: hair-spring
     restart: unless-stopped
     volumes:
@@ -42,7 +39,7 @@ services:
     depends_on:
       - redis
     ports:
-      - "8443:8443"
+      - '8443:8443'
     command:
       - bash
       - -c
@@ -51,12 +48,10 @@ services:
         java -jar /app.jar
     networks:
       - app
-
 networks:
   app:
     name: hair_network
     driver: bridge
-
 volumes:
   dbdata:
     driver: local
