@@ -14,6 +14,14 @@ on:
 
 # 할 일
 jobs:
+  display-actor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+      - name: Display GITHUB_ACTOR
+        run: echo "GITHUB_ACTOR is ${{ github.actor }}"
+
   # 이름 설정 
   build-and-test:
     # 최신버전의 우분투 기반의 환경에서 동작 
