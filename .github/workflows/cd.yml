@@ -122,67 +122,67 @@ jobs:
             sudo docker logout
 
             # Docker Compose 파일을 동적으로 생성
-            echo "
-            version: '3.7'
-            services:
-              db:
-                image: 'mysql:8.0'
-                container_name: hair-db
-                volumes:
-                  - dbdata:/var/lib/mysql
-                  - ./docker/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
-                  - ./docker/mysql/logs:/var/log/mysql
-                ports:
-                  - '3306:3306'
-                environment:
-                  MYSQL_ROOT_PASSWORD: $${DB_ROOT_PASSWORD}
-                  MYSQL_USER: $${DB_USER}
-                  MYSQL_PASSWORD: $${DB_PASSWORD}
-                  MYSQL_DATABASE: $${DB_NAME}
-                networks:
-                  - app
-              redis:
-                image: redis:7.0.4
-                command: redis-server --port 6379
-                container_name: hair-redis
-                hostname: redis_standalone
-                labels:
-                  - 'name=redis'
-                  - 'mode=standalone'
-                ports:
-                  - '6379:6379'
-                depends_on:
-                  - db
-                networks:
-                  - app
-              server:
-                image: 'ghcr.io/$LOWERCASE_ACTOR/backend-server:latest'
-                container_name: hair-spring
-                restart: unless-stopped
-                volumes:
-                  - appdata:/app
-                depends_on:
-                  - redis
-                ports:
-                  - '8443:8443'
-                command:
-                  - bash
-                  - -c
-                  - |
-                    /wait-for-it.sh db:3306 -t 15
-                    java -jar /app.jar
-                networks:
-                  - app
-            networks:
-              app:
-                name: hair_network
-                driver: bridge
-            volumes:
-              dbdata:
-                driver: local
-              appdata:
-                driver: local
-            " > docker-compose.yml
+            cat > docker-compose.yml <<- EOM
+version: '3.7'
+services:
+  db: &db_service
+    image: 'mysql:8.0'
+    container_name: hair-db
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./docker/mysql/logs:/var/log/mysql
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    networks:
+      - app
+  redis: &redis_service
+    image: redis:7.0.4
+    command: redis-server --port 6379
+    container_name: hair-redis
+    hostname: redis_standalone
+    labels:
+      - 'name=redis'
+      - 'mode=standalone'
+    ports:
+      - '6379:6379'
+    depends_on:
+      - db
+    networks:
+      - app
+  server: &server_service
+    image: 'ghcr.io/$LOWERCASE_ACTOR/backend-server:latest'
+    container_name: hair-spring
+    restart: unless-stopped
+    volumes:
+      - appdata:/app
+    depends_on:
+      - redis
+    ports:
+      - '8443:8443'
+    command:
+      - bash
+      - -c
+      - |
+        /wait-for-it.sh db:3306 -t 15
+        java -jar /app.jar
+    networks:
+      - app
+networks:
+  app:
+    name: hair_network
+    driver: bridge
+volumes:
+  dbdata:
+    driver: local
+  appdata:
+    driver: local
+EOM
 
             sudo docker-compose down
             sudo docker-compose up -d
@@ -191,7 +191,7 @@ jobs:
       - name: Remove IP from security group
         run: |
           PUBLIC_IP=${{ steps.get_ip.outputs.public_ip }}
-          RULE_EXISTS=$(aws ec2 describe-security-groups --group-ids ${{ env.SECURITY_GROUP_ID }} --query "SecurityGroups[0].IpPermissions[?FromPort==\`22\` && ToPort==\`22\` && IpProtocol==\`tcp\` && IpRanges[?CidrIp==\`${PUBLIC_IP}/32\`]]" --output text)
+          RULE_EXISTS=$(aws ec2 describe-security-groups --group-ids ${{ env.SECURITY_GROUP_ID }} --query "SecurityGroups[0].IpPermissions[?FromPort==`22` && ToPort==`22` && IpProtocol==`tcp` && IpRanges[?CidrIp==`${PUBLIC_IP}/32`]]" --output text)
           if [ -n "$RULE_EXISTS" ]; then
             aws ec2 revoke-security-group-ingress --group-id ${{ env.SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${PUBLIC_IP}/32
           else
