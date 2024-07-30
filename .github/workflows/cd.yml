@@ -78,7 +78,7 @@ jobs:
       - name: Add IP to security group
         run: |
           PUBLIC_IP=${{ steps.get_ip.outputs.public_ip }}
-          RULE_EXISTS=$(aws ec2 describe-security-groups --group-ids ${{ env.SECURITY_GROUP_ID }} --query "SecurityGroups[0].IpPermissions[?FromPort==\`22\` && ToPort==\`22\` && IpProtocol==\`tcp\` && IpRanges[?CidrIp==\`${PUBLIC_IP}/32\`]]" --output text)
+          RULE_EXISTS=$(aws ec2 describe-security-groups --group-ids ${{ env.SECURITY_GROUP_ID }} --query "SecurityGroups[0].IpPermissions[?FromPort==`22` && ToPort==`22` && IpProtocol==`tcp` && IpRanges[?CidrIp==`${PUBLIC_IP}/32`]]" --output text)
           if [ -z "$RULE_EXISTS" ]; then
             aws ec2 authorize-security-group-ingress --group-id ${{ env.SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${PUBLIC_IP}/32
           else
@@ -120,6 +120,10 @@ jobs:
             sudo docker pull ghcr.io/$LOWERCASE_ACTOR/backend-server:latest
             sudo docker image prune -f
             sudo docker logout
+            export DB_ROOT_PASSWORD=$${DB_ROOT_PASSWORD}
+            export DB_USER=$${DB_USER}
+            export DB_PASSWORD=$${DB_PASSWORD}
+            export DB_NAME=$${DB_NAME}
             sudo docker-compose down
             sudo docker-compose up -d
 
@@ -127,7 +131,7 @@ jobs:
       - name: Remove IP from security group
         run: |
           PUBLIC_IP=${{ steps.get_ip.outputs.public_ip }}
-          RULE_EXISTS=$(aws ec2 describe-security-groups --group-ids ${{ env.SECURITY_GROUP_ID }} --query "SecurityGroups[0].IpPermissions[?FromPort==\`22\` && ToPort==\`22\` && IpProtocol==\`tcp\` && IpRanges[?CidrIp==\`${PUBLIC_IP}/32\`]]" --output text)
+          RULE_EXISTS=$(aws ec2 describe-security-groups --group-ids ${{ env.SECURITY_GROUP_ID }} --query "SecurityGroups[0].IpPermissions[?FromPort==`22` && ToPort==`22` && IpProtocol==`tcp` && IpRanges[?CidrIp==`${PUBLIC_IP}/32`]]" --output text)
           if [ -n "$RULE_EXISTS" ]; then
             aws ec2 revoke-security-group-ingress --group-id ${{ env.SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${PUBLIC_IP}/32
           else
