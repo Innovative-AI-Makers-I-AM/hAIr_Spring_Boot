@@ -1,0 +1,12 @@
+name: Display GITHUB_ACTOR
+
+on: [push]
+
+jobs:
+  display-actor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+      - name: Display GITHUB_ACTOR
+        run: echo "GITHUB_ACTOR is ${{ github.actor }}"
