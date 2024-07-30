@@ -31,7 +31,7 @@ services:
     networks:
       - app
   server:
-    image: 'ghcr.io/${LOWERCASE_ACTOR}/backend-server:latest'
+    image: 'ghcr.io/$${LOWERCASE_ACTOR}/backend-server:latest'
     container_name: hair-spring
     restart: unless-stopped
     volumes:
