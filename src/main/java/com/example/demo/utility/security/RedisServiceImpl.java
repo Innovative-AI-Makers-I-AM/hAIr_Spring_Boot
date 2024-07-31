@@ -21,7 +21,7 @@ public class RedisServiceImpl implements RedisService {
             Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().ping();
             System.out.println("Successfully connected to Redis");
         } catch (Exception e) {
-            System.err.println("Failed to connect to Redis: " + e.getMessage());
+            System.err.println("Failed to connect to Redis 12:20: " + e.getMessage());
             e.printStackTrace();
         }
     }
