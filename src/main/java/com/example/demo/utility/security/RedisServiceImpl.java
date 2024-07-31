@@ -1,5 +1,6 @@
 package com.example.demo.utility.security;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -12,6 +13,16 @@ import java.time.Duration;
 public class RedisServiceImpl implements RedisService {
 
     final private StringRedisTemplate redisTemplate;
+
+    @PostConstruct
+    public void init() {
+        try {
+            redisTemplate.getConnectionFactory().getConnection().ping();
+            System.out.println("Successfully connected to Redis");
+        } catch (Exception e) {
+            System.err.println("Failed to connect to Redis: " + e.getMessage());
+        }
+    }
 
     @Override
     public void setKeyAndValue(String token, Long memberId) {
@@ -43,6 +54,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     public boolean isRefreshTokenExists(String token) {
+
         return getValueByKey(token) != null;
     }
 }
