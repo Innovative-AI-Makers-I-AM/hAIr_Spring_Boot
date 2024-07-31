@@ -25,13 +25,13 @@ public class RedisServiceImpl implements RedisService {
     @PostConstruct
     public void init() {
         try {
-            System.out.println("Redis Host: " + System.getenv("SPRING_REDIS_HOST"));
-            System.out.println("Redis Port: " + System.getenv("SPRING_REDIS_PORT"));
+            System.out.println("Redis Host from @Value: " + redisHost);
+            System.out.println("Redis Port from @Value: " + redisPort);
             redisTemplate.getConnectionFactory().getConnection().ping();
             System.out.println("Successfully connected to Redis");
         } catch (Exception e) {
-            System.out.println("Redis Host: " + System.getenv("SPRING_REDIS_HOST"));
-            System.out.println("Redis Port: " + System.getenv("SPRING_REDIS_PORT"));
+            System.out.println("Redis Host from @Value: " + redisHost);
+            System.out.println("Redis Port from @Value: " + redisPort);
             System.err.println("Failed to connect to Redis: " + e.getMessage());
             e.printStackTrace();
         }
