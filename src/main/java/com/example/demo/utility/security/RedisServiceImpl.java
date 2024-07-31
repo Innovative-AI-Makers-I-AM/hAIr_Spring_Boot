@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +18,11 @@ public class RedisServiceImpl implements RedisService {
     @PostConstruct
     public void init() {
         try {
-            redisTemplate.getConnectionFactory().getConnection().ping();
+            Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().ping();
             System.out.println("Successfully connected to Redis");
         } catch (Exception e) {
             System.err.println("Failed to connect to Redis: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
