@@ -15,8 +15,8 @@ spring:
     type: redis
 
   redis:
-    host: ${SPRING_REDIS_HOST}
-    port: ${SPRING_REDIS_PORT}
+    host: ${SPRING_REDIS_HOST:redis_standalone}
+    port: ${SPRING_REDIS_PORT:6379}
     lettuce:
       pool:
         enabled: true
