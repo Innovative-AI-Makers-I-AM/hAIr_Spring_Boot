@@ -2,6 +2,7 @@ package com.example.demo.utility.security;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,12 @@ public class RedisServiceImpl implements RedisService {
 
     final private StringRedisTemplate redisTemplate;
 
+    @Value("${spring.redis.host}")
+    private String redisHost;
+
+    @Value("${spring.redis.port}")
+    private int redisPort;
+
     @PostConstruct
     public void init() {
         try {
@@ -23,6 +30,8 @@ public class RedisServiceImpl implements RedisService {
             redisTemplate.getConnectionFactory().getConnection().ping();
             System.out.println("Successfully connected to Redis");
         } catch (Exception e) {
+            System.out.println("Redis Host: " + System.getenv("SPRING_REDIS_HOST"));
+            System.out.println("Redis Port: " + System.getenv("SPRING_REDIS_PORT"));
             System.err.println("Failed to connect to Redis: " + e.getMessage());
             e.printStackTrace();
         }
